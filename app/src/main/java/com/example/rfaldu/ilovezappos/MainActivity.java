@@ -1,5 +1,6 @@
 package com.example.rfaldu.ilovezappos;
 
+import android.databinding.DataBindingComponent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -9,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.rfaldu.ilovezappos.databinding.ActivityMainBinding;
 import com.example.rfaldu.ilovezappos.interfaces.ApiUtils;
 import com.example.rfaldu.ilovezappos.interfaces.ZapposAPI;
 import com.example.rfaldu.ilovezappos.model.ItemDescription;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
     }
 
     @Override
@@ -74,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
                     //t2.setText(response.body().getCurrentResultCount());
                     itemDescriptionList = response.body().getResults();
                     displayItem = new DisplayItem(itemDescriptionList.get(0).getProductName(), itemDescriptionList.get(0).getBrandName(), itemDescriptionList.get(0).getProductUrl(), itemDescriptionList.get(0).getPrice(), itemDescriptionList.get(0).getPercentOff());
+
+                    //ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
 
                 }
                 else{
