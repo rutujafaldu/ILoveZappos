@@ -101,7 +101,8 @@
             app:pressedTranslationZ="12dp"
             android:src="@drawable/ic_plus"
             android:layout_alignParentBottom="true"
-            android:layout_alignEnd="@+id/price_textView" />
+            android:layout_alignEnd="@+id/price_textView"
+            android:visibility="invisible"/>
 
 
     </RelativeLayout>
