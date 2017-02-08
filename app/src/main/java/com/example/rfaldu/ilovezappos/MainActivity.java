@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.support.design.widget.FloatingActionButton;
 import android.widget.TextView;
 
 
@@ -28,7 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     ZapposAPI zapposAPI;
     String searchItem;
@@ -37,11 +38,82 @@ public class MainActivity extends AppCompatActivity {
     DisplayItem displayItem;
     ActivityMainBinding binding;
 
+    public boolean fab2_status = false;
+    private Boolean isFabOpen = false;
+    private FloatingActionButton fab,fab1,fab2;
+    private Animation fab_open,fab_close,rotate_forward,rotate_backward, zoom_in, zoom_out;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        fab = (FloatingActionButton)findViewById(R.id.fab);
+        fab1 = (FloatingActionButton)findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton)findViewById(R.id.fab2);
+        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
+        rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_forward);
+        rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_backward);
+        zoom_in = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.zoom_in);
+        zoom_out = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.zoom_out);
+        fab.setOnClickListener(this);
+        fab1.setOnClickListener(this);
+        fab2.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.fab:
+
+                animateFAB();
+                break;
+            case R.id.fab1:
+
+                Log.d("Raj", "Fab 1");
+                break;
+            case R.id.fab2:
+                if(fab2_status == false) {
+                    fab2.setImageResource(R.drawable.ic_favorite_white_24dp);
+                    fab2.startAnimation(zoom_in);
+                    //fab2.startAnimation(zoom_out);
+                    fab2_status = true;
+                }
+                else{
+                    fab2.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                    fab2_status = false;
+                }
+                Log.d("Raj", "Fab 2");
+                break;
+        }
+    }
+
+    public void animateFAB(){
+
+        if(isFabOpen){
+
+            fab.startAnimation(rotate_backward);
+            fab1.startAnimation(fab_close);
+            fab2.startAnimation(fab_close);
+            fab1.setClickable(false);
+            fab2.setClickable(false);
+            //fab2.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+            isFabOpen = false;
+            Log.d("Raj", "close");
+
+        } else {
+
+            fab.startAnimation(rotate_forward);
+            fab1.startAnimation(fab_open);
+            fab2.startAnimation(fab_open);
+            fab1.setClickable(true);
+            fab2.setClickable(true);
+            isFabOpen = true;
+            Log.d("Raj","open");
+
+        }
     }
 
     @Override
@@ -52,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         SearchView searchView = (SearchView)item.getActionView();
         brandName_TextView = (TextView)findViewById(R.id.brandName_TextView);
         price_TextView = (TextView)findViewById(R.id.price_textView);
-        //t3 = (TextView)findViewById(R.id.textView3);
         zapposAPI = ApiUtils.getZapposAPI();
         itemDescriptionList = new ArrayList<ItemDescription>();
 
@@ -65,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
                 displayProduct(query);
                 brandName_TextView.setVisibility(View.VISIBLE);
                 price_TextView.setVisibility(View.VISIBLE);
+                fab2.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                fab2_status = false;
                 return false;
             }
 
@@ -84,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ItemName> call, Response<ItemName> response) {
                 if(response.isSuccessful()){
-                    //t2.setText(response.body().getCurrentResultCount());
                     itemDescriptionList = response.body().getResults();
                     displayItem = new DisplayItem(itemDescriptionList.get(0).getProductName(), itemDescriptionList.get(0).getBrandName()+" ", itemDescriptionList.get(0).getThumbnailImageUrl(), itemDescriptionList.get(0).getPrice(), itemDescriptionList.get(0).getPercentOff());
                     binding.setDisplayItem(displayItem);
