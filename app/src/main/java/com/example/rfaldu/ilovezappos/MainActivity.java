@@ -36,6 +36,9 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    //private static final String TAG_RETAINED_FRAGMENT = "RetainedFragment";
+    //private RetainedFragment rDataFragment;
+
     ZapposAPI zapposAPI;
     String searchItem;
     TextView brandName_TextView, price_TextView;
@@ -52,7 +55,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
+        //Starting handling orientation
+
+        /*android.app.FragmentManager fm = getFragmentManager();
+        rDataFragment = (RetainedFragment) fm.findFragmentByTag(TAG_RETAINED_FRAGMENT);
+
+        if(rDataFragment == null){
+            rDataFragment = new RetainedFragment();
+            fm.beginTransaction().add(rDataFragment,TAG_RETAINED_FRAGMENT).commit();
+            rDataFragment.setData(displayItem);
+
+        }*/
+
+        //ENd of orientation handling
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
         fab = (FloatingActionButton)findViewById(R.id.fab);
         fab1 = (FloatingActionButton)findViewById(R.id.fab1);
         fab2 = (FloatingActionButton)findViewById(R.id.fab2);
@@ -77,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fab1:
                 Toast.makeText(v.getContext(), "Added to Cart", Toast.LENGTH_SHORT).show();
                 animateFab1();
-                Log.d("Raj", "Fab 1");
                 break;
             case R.id.fab2:
                 if(fab2_status == false) {
@@ -85,16 +102,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     fab2.setImageResource(R.drawable.ic_favorite_white_24dp);
                     fab2.startAnimation(zoom_in);
                     fab2.startAnimation(zoom_out);
-                    //Snackbar.make(v, "Added to Favourites",Snackbar.LENGTH_LONG).setAction("Action",null).show();
                     fab2_status = true;
                 }
                 else{
                     Toast.makeText(v.getContext(), "Removed from Favourites", Toast.LENGTH_SHORT).show();
                     fab2.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-                    //Snackbar.make(v, "Removed from Favourites",Snackbar.LENGTH_LONG).setAction("Action",null).show();
                     fab2_status = false;
                 }
-                Log.d("Raj", "Fab 2");
                 break;
         }
     }
@@ -108,9 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             fab2.startAnimation(fab_close);
             fab1.setClickable(false);
             fab2.setClickable(false);
-            //fab2.setImageResource(R.drawable.ic_favorite_border_white_24dp);
             isFabOpen = false;
-            Log.d("Raj", "close");
 
         } else {
 
@@ -122,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             fab1.setClickable(true);
             fab2.setClickable(true);
             isFabOpen = true;
-            Log.d("Raj","open");
 
         }
     }
@@ -166,27 +177,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         price_TextView = (TextView)findViewById(R.id.price_textView);
         zapposAPI = ApiUtils.getZapposAPI();
         itemDescriptionList = new ArrayList<ItemDescription>();
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
 
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchItem = query;
-                //t1.setText(searchItem);
-                displayProduct(query);
-                brandName_TextView.setVisibility(View.VISIBLE);
-                price_TextView.setVisibility(View.VISIBLE);
-                fab.setVisibility(View.VISIBLE);
-                fab2.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-                fab2_status = false;
+                isFabOpen = true;
+                animateFAB();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //searchItem = newText;
-                //t1.setText(searchItem);
-                //displayProduct(newText);
+                displayProduct(newText);
+                brandName_TextView.setVisibility(View.VISIBLE);
+                price_TextView.setVisibility(View.VISIBLE);
+                fab.setVisibility(View.VISIBLE);
+                fab2.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                fab2_status = false;
+                fab.startAnimation(rotate_backward);
                 return false;
 
             }
@@ -199,11 +208,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResponse(Call<ItemName> call, Response<ItemName> response) {
                 if(response.isSuccessful()){
-                    itemDescriptionList = response.body().getResults();
-                    displayItem = new DisplayItem(itemDescriptionList.get(0).getProductName(), itemDescriptionList.get(0).getBrandName()+" ", itemDescriptionList.get(0).getThumbnailImageUrl(), itemDescriptionList.get(0).getPrice(), itemDescriptionList.get(0).getPercentOff());
-                    binding.setDisplayItem(displayItem);
-
-                    //ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+                    if(!response.body().getCurrentResultCount().equals("0")){
+                        itemDescriptionList = response.body().getResults();
+                        displayItem = new DisplayItem(itemDescriptionList.get(0).getProductName(), itemDescriptionList.get(0).getBrandName()+" ", itemDescriptionList.get(0).getThumbnailImageUrl(), itemDescriptionList.get(0).getPrice(), itemDescriptionList.get(0).getPercentOff());
+                        binding.setDisplayItem(displayItem);
+                    }
+                    else{
+                        displayItem = new DisplayItem("No matches found...","",null,"","");
+                        price_TextView.setVisibility(View.INVISIBLE);
+                        binding.setDisplayItem(displayItem);
+                        fab.setVisibility(View.INVISIBLE);
+                    }
                 }
                 else{
                     int statusCode = response.code();
@@ -217,4 +232,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
+   /* @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }*/
 }

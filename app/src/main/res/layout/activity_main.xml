@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -35,8 +36,8 @@
             android:textStyle="bold"/>
 
         <ImageView
-            android:layout_width="230dp"
-            android:layout_height="230dp"
+            android:layout_width="200dp"
+            android:layout_height="195dp"
             app:imageURL="@{displayItem.imageURL}"
             android:layout_marginTop="0dp"
             android:id="@+id/imageView"
@@ -62,8 +63,8 @@
             android:id="@+id/fab2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="13dp"
-            android:layout_marginRight="150dp"
+            android:layout_marginBottom="120dp"
+            android:layout_marginLeft="200dp"
             android:layout_gravity="bottom|center"
             android:visibility="invisible"
             app:backgroundTint="@color/colorFAB2"
@@ -77,8 +78,8 @@
             android:id="@+id/fab1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="13dp"
-            android:layout_marginRight="80dp"
+            android:layout_marginBottom="65dp"
+            android:layout_marginLeft="200dp"
             android:layout_gravity="bottom|center"
             android:visibility="invisible"
             app:elevation="6dp"
@@ -93,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right|end"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="0dp"
             app:elevation="6dp"
             android:clickable="true"
             app:fabSize="normal"
